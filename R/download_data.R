@@ -1,17 +1,17 @@
-#' Download NJ car accident records for a given year
+#' Download New Jersey car accident records for a given year
 #'
 #'
-#' @param year Year to download crash data
+#' @param year Year to download crash data for
 #' @param type The table of NJDOT crash data to download
-#' @return tibble of all reported accidents for the year
-#' @importFrom readr read_csv
-#' @importFrom readr cols
-#' @importFrom stringr str_to_lower
+#' @param geo Logical, whether to filter only to geotagged cases (default = FALSE)
+#' @return data.frame of all reported accidents for the year
+#' @importFrom httr http_error
 #' @importFrom lubridate mdy
+#' @importFrom stats complete.cases
 #' @examples
 #' get_njtr1(year = 2019, type = "Pedestrians")
 #' @export
-get_njtr1 <- function(year, type) {
+get_njtr1 <- function(year, type, geo = FALSE) {
 
   # Validate input for table selection
   tables <- c("Accidents", "Drivers", "Pedestrians", "Occupants", "Vehicles")
@@ -26,21 +26,36 @@ get_njtr1 <- function(year, type) {
   # Set base URL for data downloads
   base_url <- "https://www.state.nj.us/transportation/refdata/accident/"
 
-
-  if (year >= 2017) {
+  # Set column names based on year selected to match NHJDOT schema
+  if (year >= 2017 & year <= 2019) {
     # Set parameters for download using input to function
     fields <- utils::read.csv(paste0(system.file("extdata", package = "njtr1"), "/fields/2017/", type, ".csv"), header = FALSE)
     file_name <- paste0(base_url, as.character(year), "/NewJersey", year, type, ".zip")
-  } else if (year <= 2016) {
-    stop("Years prior to 2017 are not yet supported")
+  } else if (year <= 2016 & year >= 2001) {
+    fields <- utils::read.csv(paste0(system.file("extdata", package = "njtr1"), "/fields/2001/", type, ".csv"), header = FALSE)
+    file_name <- paste0(base_url, as.character(year), "/NewJersey", year, type, ".zip")
   } else if (year > 2019) {
-    stop("Years past 2019 are not yet supported")
+    stop("Invalid year: No data for years past 2019 is currently available")
   }
 
   # create a temporary directory and file for downloading the data
   zip_file <- tempfile(fileext = ".zip")
   td <- tempdir()
-  utils::download.file(file_name, zip_file, mode = "wb")
+
+  # Check if internet connection exists before attempting data download
+  if (curl::has_internet() == FALSE) {
+    message("No internet connection. Please connect to the internet and try again.")
+    return(NULL)
+  }
+
+  # Check if data is available and download the data
+  if (httr::http_error(file_name)) {
+    message("Data source broken. Please try again.")
+    return(NULL)
+  } else {
+    message("njtr1: downloading data")
+    utils::download.file(file_name, zip_file, mode = "wb")
+  }
 
   # Get name of first file in the ZIP archive
   fname <- utils::unzip(zip_file, list = TRUE)$Name[1]
@@ -53,10 +68,25 @@ get_njtr1 <- function(year, type) {
 
 
   # Read in the file
-  data <- suppressWarnings(readr::read_csv(fpath, col_names = FALSE, trim_ws = TRUE, quote = "", col_types = readr::cols()))
+  data <- utils::read.csv(fpath, header = FALSE, row.names = NULL, quote = "")
 
   # Add field names
   names(data) <- fields$V1
 
-  return(data)
+  # Parse dates
+  if (type == "Accidents") {
+    suppressWarnings(data$crash_date <- lubridate::mdy(data$crash_date))
+    # If geo is TRUE, only return geotagged cases
+    if (geo == TRUE) {
+      data <- data[complete.cases(data[, 46:47]), ]
+    }
+  } else if (type == "Pedestrians") {
+    suppressWarnings(data$date_of_birth <- lubridate::mdy(data$date_of_birth))
+  } else if (type == "Drivers") {
+    data$driver_dob <- suppressWarnings(lubridate::mdy(data$driver_dob))
+  }
+  # Clean any empty columns
+  keep.cols <- names(data) %in% c(NA)
+  data_clean <- data[!keep.cols]
+  return(data_clean)
 }
