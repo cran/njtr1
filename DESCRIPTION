@@ -1,6 +1,6 @@
 Package: njtr1
 Title: Download, Analyze & Clean New Jersey Car Crash Data
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person(given = "Gavin",
            family = "Rozzi",
@@ -17,14 +17,14 @@ URL: https://gavinrozzi.github.io/njtr1/,
         https://www.gavinrozzi.com/project/njtr1/
 BugReports: https://github.com/gavinrozzi/njtr1/issues/
 LazyData: true
-Imports: lubridate, httr, curl
+Imports: lubridate, httr, curl, readr
 Depends: R (>= 3.5.0)
 Suggests: knitr, rmarkdown, markdown
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr, rmarkdown
 NeedsCompilation: no
-Packaged: 2021-04-20 20:58:36 UTC; gavinrozzi
+Packaged: 2021-05-14 17:53:20 UTC; gavinrozzi
 Author: Gavin Rozzi [aut, cre] (<https://orcid.org/0000-0002-9969-8175>)
 Maintainer: Gavin Rozzi <gr@gavinrozzi.com>
 Repository: CRAN
-Date/Publication: 2021-04-20 23:00:07 UTC
+Date/Publication: 2021-05-14 18:00:02 UTC
