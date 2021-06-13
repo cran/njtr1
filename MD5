@@ -1,11 +1,11 @@
-5751a6901af460a620eb3cb3bbd053bf *DESCRIPTION
-16b48eae9b4663c0a707c8ef9e815219 *NAMESPACE
-658a3d3bc4776873a26b45e050e73e3a *NEWS.md
+8e906b7aebc6c40ee1f9b804f35e7589 *DESCRIPTION
+287cbb9fc72d5f9534cda7b0f3044955 *NAMESPACE
+ae531bcfcff89cfddcb548f3607c3e5d *NEWS.md
 68b329da9893e34099c7d8ad5cb9c940 *R/analysis.R
 19e9c2ba081edbe4f565af94e10b379d *R/data.R
-bd324724b805ec5cd99a75b2b9c13deb *R/download_data.R
+e339e6943d6c43fc613e1135156fd76f *R/download_data.R
 05ea7a31d395dcd65d14a0b85baed503 *README.md
-6efb2fb340dd5c0e6374d04274128dbc *build/vignette.rds
+0ae197d49f9ec5235d48f2578706c918 *build/vignette.rds
 28150738de071a1cd39140cfd4c779e6 *data/insurance.rda
 7a75c3abd95cd2260b2ea895c8a005ea *inst/doc/njtr1.R
 394f0bfe3a563a6f762f1b2909974f32 *inst/doc/njtr1.Rmd
